@@ -5,12 +5,20 @@ const app = express();
 //connect Database
 connectDB();
 
+//init Middleware
+app.use(express.json({extended:false}))
 
-app.get('/',(req,res)=>{
-res.send('API  running ');
+app.get('/', (req, res) => {
+  res.send('API  running ');
 });
+
+//Define Routes
+app.use('/api/users', require('./routes/api/users'));
+app.use('/api/auth', require('./routes/api/auth'));
+app.use('/api/posts', require('./routes/api/posts'));
+app.use('/api/profile', require('./routes/api/profile'));
+app.use('/api/feedbacks', require('./routes/api/feedbacks'));
 
 const PORT = process.env.Port || 5000;
 
-app.listen(PORT,console.log(`listening on port ${PORT}`));
-
+app.listen(PORT, console.log(`listening on port ${PORT}`));

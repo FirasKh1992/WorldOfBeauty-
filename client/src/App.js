@@ -6,21 +6,27 @@ import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
+//redux
+import { Provider } from 'react-redux';
+import store from './store';
+
 function App() {
   return (
-    <Router>
-      <Fragment>
-        <Navbar />
+    <Provider store={store}>
+      <Router>
+        <Fragment>
+          <Navbar />
 
-        <Route exact path='/' component={Landing} />
-        <section className='container'>
-          <Switch>
-            <Route exact path='/register' component={Register} />
-            <Route exact path='/login' component={Login} />
-          </Switch>
-        </section>
-      </Fragment>
-    </Router>
+          <Route exact path='/' component={Landing} />
+          <section className='container'>
+            <Switch>
+              <Route exact path='/register' component={Register} />
+              <Route exact path='/login' component={Login} />
+            </Switch>
+          </section>
+        </Fragment>
+      </Router>
+    </Provider>
   );
 }
 

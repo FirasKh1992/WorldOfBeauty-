@@ -4,11 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 import { setAlert } from '../../actions/alert';
-import PropTypes from 'prop-types'
-
+import { register } from '../../actions/auth';
+import PropTypes from 'prop-types';
 
 const Register = props => {
-  const {setAlert}=props;
+  const { setAlert,register } = props;
   const [formData, setFormdata] = useState({
     name: '',
     email: '',
@@ -21,9 +21,9 @@ const Register = props => {
   const onSubmit = e => {
     e.preventDefault();
     if (password !== password2) {
-      setAlert('passwords does not match','danger',3000);
+      setAlert('passwords does not match', 'danger', 3000);
     } else {
-      console.log(formData);
+      register({name,email,password});
     }
   };
   return (
@@ -89,7 +89,8 @@ const Register = props => {
 };
 
 
-Register.protoTypes={
-  setAlert:PropTypes.func.isRequired,
-}
-export default connect(null, {setAlert})(Register);
+Register.protoTypes = {
+  setAlert: PropTypes.func.isRequired,
+  register:PropTypes.func.isRequired,
+};
+export default connect(null, { setAlert,register})(Register);

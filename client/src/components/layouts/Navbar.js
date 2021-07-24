@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeartbeat } from '@fortawesome/free-solid-svg-icons';
+import { faHeartbeat,faFeatherAlt } from '@fortawesome/free-solid-svg-icons';
 
 export default function Navbar() {
   return (
     <nav className='navbar bg-dark'>
       <h1>
         <Link to='/'>
-        <FontAwesomeIcon icon={faHeartbeat} />{' '}
+        <FontAwesomeIcon icon={faFeatherAlt} />{' '}
          World Of Beauty
         </Link>
       </h1>

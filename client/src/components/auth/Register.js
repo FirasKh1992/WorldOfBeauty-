@@ -2,8 +2,13 @@ import React, { Fragment, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { connect } from 'react-redux';
+import { setAlert } from '../../actions/alert';
+import PropTypes from 'prop-types'
 
-const Register = () => {
+
+const Register = props => {
+  const {setAlert}=props;
   const [formData, setFormdata] = useState({
     name: '',
     email: '',
@@ -16,7 +21,7 @@ const Register = () => {
   const onSubmit = e => {
     e.preventDefault();
     if (password !== password2) {
-      console.log('password does not match');
+      setAlert('passwords does not match','danger',3000);
     } else {
       console.log(formData);
     }
@@ -83,4 +88,8 @@ const Register = () => {
   );
 };
 
-export default Register;
+
+Register.protoTypes={
+  setAlert:PropTypes.func.isRequired,
+}
+export default connect(null, {setAlert})(Register);

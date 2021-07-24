@@ -1,9 +1,15 @@
 import React, { Fragment, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import {connect} from 'react-redux';
+import { login } from '../../actions/auth';
+import PropTypes from 'prop-types';
 
-const Login = () => {
+
+
+
+const Login = ({login,isAuthenticated}) => {
   const [formData, setFormdata] = useState({
     email: '',
     password: '',
@@ -13,8 +19,14 @@ const Login = () => {
     setFormdata({ ...formData, [e.target.name]: e.target.value });
   const onSubmit = e => {
     e.preventDefault();
-      console.log(formData);
+     login(email,password);
   };
+
+//redirects if logged in
+if(isAuthenticated){
+  return <Redirect to='/dashboard' />
+}
+
   return (
     <Fragment>
       <h1 className='large text-primary'>Sign In</h1>
@@ -56,4 +68,13 @@ const Login = () => {
   );
 };
 
-export default Login;
+
+
+const mapStateToProps=state=>({
+  isAuthenticated:state.auth.isAuthenticated
+})
+Login.prototype={
+  login:PropTypes.func.isRequired,
+  isAuthenticated:PropTypes.bool.isRequired,
+}
+export default connect(mapStateToProps,{login})(Login);

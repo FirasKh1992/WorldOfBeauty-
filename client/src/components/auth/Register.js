@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,Redirect } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
@@ -8,7 +8,7 @@ import { register } from '../../actions/auth';
 import PropTypes from 'prop-types';
 
 const Register = props => {
-  const { setAlert,register } = props;
+  const { setAlert,register,isAuthenticated } = props;
   const [formData, setFormdata] = useState({
     name: '',
     email: '',
@@ -26,6 +26,11 @@ const Register = props => {
       register({name,email,password});
     }
   };
+
+  if(isAuthenticated){
+    return <Redirect to='/dashboard' />
+  }
+  
   return (
     <Fragment>
       <h1 className='large text-primary'>Sign Up</h1>
@@ -88,9 +93,12 @@ const Register = props => {
   );
 };
 
-
+const mapStateToProps = state=>({
+  isAuthenticated:state.auth.isAuthenticated
+})
 Register.protoTypes = {
   setAlert: PropTypes.func.isRequired,
   register:PropTypes.func.isRequired,
+  isAuthenticated:PropTypes.bool.isRequired,
 };
-export default connect(null, { setAlert,register})(Register);
+export default connect(mapStateToProps, { setAlert,register})(Register);

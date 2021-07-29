@@ -9,7 +9,7 @@ export default function Landing() {
           <h1 className='x-large'>Cosmetician Connector</h1>
           <p className='lead'>
             Create a cosmetician profile and timetable, share your feedback and
-            get help from other cosmetician
+            get help from other cosmetician 
           </p>
           <div className='buttons'>
             <Link to='/register' className='btn btn-primary'>

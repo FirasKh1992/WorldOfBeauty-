@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const gravatar = require('gravatar');
 const { check, validationResult } = require('express-validator');
 const bcrypt=require('bcryptjs');
 const User = require('../../models/User');
@@ -32,11 +31,7 @@ router.post(
       if (user) {
         return res.status(400).json({ errors: [{ msg: 'user already exist' }] });
       }
-      const avatar=gravatar.url(email,{
-          s:"200",
-          r:"pg",
-          d:"mm"
-      })
+      const avatar='IMG url'
       user = new User({
           name,
           email,
@@ -47,7 +42,6 @@ router.post(
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(password,salt);
       await user.save();
-      //get users gravatar
       //Encrypt  password
       //return jsonwebtoken and that in order to keep the user logged in after the registeration.
 

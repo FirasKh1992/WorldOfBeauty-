@@ -20,7 +20,7 @@ body {
   line-height: 1.6;
   background-color: #fff;
   color: #333;
-  overflow: hidden
+  
 }
 
 a {
@@ -577,3 +577,17 @@ button {
     padding: 0.3rem 0.4rem;
   }
 }
+.loading {
+  display: flex;
+  width: 200px;
+  margin: auto; 
+  align-items: center;
+  height: 100vh;
+}
+
+.social-icons{
+  margin-right: 0.5em;
+ }
+ .page{
+   margin-left: 2.5rem;
+ }

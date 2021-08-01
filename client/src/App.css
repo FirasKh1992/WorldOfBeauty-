@@ -360,6 +360,9 @@ button {
   padding: 1rem;
   line-height: 1.8;
   margin-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px 100px / 120px;
+box-shadow: -9px 8px 5px 3px rgba(0,0,0,0.35);
 }
 
 /* Profile Page */

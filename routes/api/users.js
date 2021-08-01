@@ -31,7 +31,7 @@ router.post(
       if (user) {
         return res.status(400).json({ errors: [{ msg: 'user already exist' }] });
       }
-      const avatar='IMG url'
+      const avatar='https://images.unsplash.com/photo-1583209814683-c023dd293cc6?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'
       user = new User({
           name,
           email,

@@ -12,7 +12,8 @@ import EditProfile from './components/profile-forms/EditProfile';
 import Profiles from './components/profiles/Profiles';
 import PrivateRoute from './components/routing/PrivateRoute';
 import Profile from './components/profile/Profile';
-
+import Post from './components/post/Post';
+import Posts from './components/posts/Posts';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 //redux
@@ -44,6 +45,8 @@ function App() {
               <PrivateRoute exact path='/dashboard' component={Dashboard} />
               <PrivateRoute exact path='/create-profile' component={CreateProfile} />
               <PrivateRoute exact path='/edit-profile' component={EditProfile} />
+              <PrivateRoute exact path='/posts' component={Posts} />
+              <PrivateRoute exact path='/posts/:id' component={Post} />
             </Switch>
           </section>
         </Fragment>

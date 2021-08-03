@@ -194,7 +194,7 @@ router.put(
   }
 );
 
-//@route DELETE api/profile/appointment/
+//@route DELETE api/profile/appointment/:appointment_id
 //@desc delete appointment
 //@access  private
 router.delete('/appointments/:appointment_id', auth, async (req, res) => {

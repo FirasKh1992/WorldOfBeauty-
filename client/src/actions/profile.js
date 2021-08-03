@@ -118,4 +118,70 @@ export const deleteAccount = () => async dispatch => {
       }
     }
   };
-  
+
+
+// ADD appointment
+export const addAppointments = (formData, history) => async dispatch => {
+  try {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const res = await axios.put('/api/profile/appointment', formData, config);
+
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: res.data,
+    });
+    dispatch(setAlert('Your schedule had been added successfully ', 'success'));
+
+    history.push('/dashboard'); //redirect to /dashboard
+  } catch (err) {
+    //check for validation errors
+    const errors = err.response.data.errors;
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg), 'danger'));
+    }
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+  //Delete appointment
+export const deleteAppointment = id => async dispatch => {
+  const res = await axios.delete(`/api/profile/appointment/${id}`);
+  try {
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: res.data,
+    });
+    dispatch(setAlert('Appointment Removed ', 'danger'));
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+  //update appointment
+  export const updateAppointment = (therapist_id,appointment_id) => async dispatch => {
+    const res = await axios.delete(`/api/profile/appointment/${therapist_id}/${appointment_id}`);
+    try {
+      dispatch({
+        type: UPDATE_PROFILE,
+        payload: res.data,
+      });
+      dispatch(setAlert('Appointment Removed ', 'danger'));
+    } catch (err) {
+      dispatch({
+        type: PROFILE_ERROR,
+        payload: { msg: err.response.statusText, status: err.response.status },
+      });
+    }
+  };
+    

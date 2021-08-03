@@ -7,6 +7,7 @@ import {
   PROFILE_ERROR,
   CLEAR_PROFILE,
   GET_PROFILES,
+  UPDATE_PROFILE,
 } from './types';
 //GET CURRENT USERS PROFILE
 export const getCurrentUserProfile = () => async dispatch => {

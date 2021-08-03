@@ -24,25 +24,53 @@ const ProfileSchema = new mongoose.Schema({
   bio: {
     type: String,
   },
-  social: 
+  social: {
+    youtube: {
+      type: String,
+    },
+    twitter: {
+      type: String,
+    },
+    facebook: {
+      type: String,
+    },
+    instagram: {
+      type: String,
+    },
+  },
+  appointments: [
     {
-      youtube: {
-        type: String
+      client: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: User,
+        default:null
       },
-      twitter:{
-        type:String
+      day:{
+        type:String,
+        required:true
       },
-      facebook:{
-        type:String
+      startTime: {
+        type: String,
+        required: true,
       },
-      instagram:{
-        type:String
+      endTime: {
+        type: String,
+        required: true,
+      },
+      status: {
+        type: Boolean,
+        default: false,
+      },
+      title: {
+        type: String,
+        required: true,
       },
     },
-    date:{
-      type:Date,
-      default:Date.now
-    }
+  ],
+  date: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-module.exports=profile=mongoose.model('profile',ProfileSchema);
+module.exports = profile = mongoose.model('profile', ProfileSchema);

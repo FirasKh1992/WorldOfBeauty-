@@ -154,8 +154,8 @@ router.delete('/', auth, async (req, res) => {
   }
 });
 
-//@route POST api/profile/appointment
-//@desc add profile appointment
+//@route POST api/profile/appointments
+//@desc add profile appointments
 //@access  private
 router.put(
   '/appointments',
@@ -164,7 +164,6 @@ router.put(
 
     [
       [
-        check('appointments.*.title', 'Title is required').not().isEmpty(),
         check('appointments.*.startTime', 'Starting time  is required')
           .not()
           .isEmpty(),
@@ -181,9 +180,9 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
     const appointments = [...req.body.appointments];
-
     try {
       const profile = await Profile.findOne({ user: req.user.id });
+      console.log(profile);
       profile.appointments = [...appointments];
       await profile.save();
       res.json(profile);
@@ -223,7 +222,6 @@ router.put(
   [
     auth,
     [
-      check('title', 'Title is required').not().isEmpty(),
       check('status', 'status is required').not().isEmpty(),
     ],
   ],
@@ -232,7 +230,7 @@ router.put(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { status, title } = req.body;
+    const { status } = req.body;
 
     try {
       let profile = await Profile.findOne({ user: req.params.therapist_id });
@@ -277,8 +275,7 @@ router.put(
             appointment =>
               appointment.status &&
               appointment.client &&
-              appointment.client.toString() === req.user.id &&
-              appointment.title === title
+              appointment.client.toString() === req.user.id
           ).length > 0
         ) {
           return res.status(400).json({

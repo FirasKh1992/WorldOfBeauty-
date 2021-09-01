@@ -1,11 +1,10 @@
 /* Global Styles */
 :root {
   --primary-color: #774936;
-  --dark-color: #3C0000;
-  --light-color: #F5D0C5; 
+  --dark-color: #3c0000;
+  --light-color: #f5d0c5;
   --danger-color: #dc3545;
   --success-color: #28a745;
-
 }
 
 * {
@@ -20,7 +19,6 @@ body {
   line-height: 1.6;
   background-color: #fff;
   color: #333;
-  
 }
 
 a {
@@ -362,7 +360,7 @@ button {
   margin-bottom: 1rem;
   margin-bottom: 1rem;
   border-radius: 10px 100px / 120px;
-box-shadow: -9px 8px 5px 3px rgba(0,0,0,0.35);
+  box-shadow: -9px 8px 5px 3px rgba(0, 0, 0, 0.35);
 }
 
 /* Profile Page */
@@ -583,14 +581,14 @@ box-shadow: -9px 8px 5px 3px rgba(0,0,0,0.35);
 .loading {
   display: flex;
   width: 200px;
-  margin: auto; 
+  margin: auto;
   align-items: center;
   height: 100vh;
 }
 
-.social-icons{
+.social-icons {
   margin-right: 0.5em;
- }
- .page{
-   margin-left: 2.5rem;
- }
+}
+.page {
+  margin-left: 2.5rem;
+}

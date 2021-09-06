@@ -179,7 +179,8 @@ router.put(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const appointments = [...req.body.appointments];
+    console.dir(req.body);
+    const appointments = [...req.body];
     try {
       const profile = await Profile.findOne({ user: req.user.id });
       console.log(profile);
@@ -231,28 +232,30 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
     const { status } = req.body;
-
     try {
-      let profile = await Profile.findOne({ user: req.params.therapist_id });
+      let profile = await Profile.findOne({ user: req.params.therapist_id }).populate(
+        'user',
+        ['name', 'avatar']
+      );
 
       const currentAppointment = profile.appointments
         .filter(
           appointment =>
-            appointment._id.toString() === req.params.appointment_id
+            appointment._id.toString() === req.params.appointment_id.toString()
         )
         .find(app => app);
+        console.log(currentAppointment);
 
-      if (currentAppointment.status && currentAppointment.client) {
-        console.log(req.user.id);
-      }
-      //in case the client want to book new appointment
-      if (status === 'true') {
+      //in case the client want to book new appointment;
+      if (status.toString() === 'true') {
+        console.log('status is true')
         // check if the appointment is already taken.
         if (
           currentAppointment.status &&
           currentAppointment.client &&
           currentAppointment.client.toString() !== req.user.id
         ) {
+          console.log('the appointment is already taken')
           return res.status(400).json({
             msg: `the appointment is already taken`,
           });
@@ -264,6 +267,7 @@ router.put(
           currentAppointment.client &&
           currentAppointment.client.toString() === req.user.id
         ) {
+          console.log('you have already book this appointment')
           return res.status(400).json({
             msg: `you have already book this appointment`,
           });
@@ -278,6 +282,7 @@ router.put(
               appointment.client.toString() === req.user.id
           ).length > 0
         ) {
+          console.log('you already have an appointment for this type of treatment')
           return res.status(400).json({
             msg: `you already have an appointment for this type of treatment`,
           });
@@ -300,6 +305,7 @@ router.put(
           currentAppointment.client &&
           currentAppointment.client.toString() !== req.user.id
         ) {
+          console.log('You did not book this appointment')
           return res.status(400).json({
             msg: `You did not book this appointment`,
           });

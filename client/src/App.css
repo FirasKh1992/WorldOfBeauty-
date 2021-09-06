@@ -592,3 +592,10 @@ button {
 .page {
   margin-left: 2.5rem;
 }
+
+
+.day-select{
+  width: 6.5rem;
+  margin-right: 12px;
+  height: 3rem;
+}

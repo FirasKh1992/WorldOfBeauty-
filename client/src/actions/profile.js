@@ -8,7 +8,7 @@ import {
   CLEAR_PROFILE,
   GET_PROFILES,
   UPDATE_PROFILE,
-  ADD_SCHEDULER
+
 } from './types';
 //GET CURRENT USERS PROFILE
 export const getCurrentUserProfile = () => async dispatch => {
@@ -129,7 +129,7 @@ export const addAppointments = (formData, history) => async dispatch => {
       },
     };
 
-    const res = await axios.put('/api/profile/appointment', formData, config);
+    const res = await axios.put('/api/profile/appointments', formData, config);
 
     dispatch({
       type: UPDATE_PROFILE,
@@ -170,34 +170,32 @@ export const deleteAppointment = id => async dispatch => {
 
 //update appointment
 export const updateAppointment =
-  (therapist_id, appointment_id) => async dispatch => {
-    const res = await axios.delete(
-      `/api/profile/appointment/${therapist_id}/${appointment_id}`
-    );
+  (therapist_id, appointment_id,history) => async dispatch => {  
     try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+      const status = "true";
+      const body = JSON.stringify({ status });
+      const res = await axios.put(
+        `/api/profile/appointments/${therapist_id}/${appointment_id}`,
+        body,
+        config
+      );
       dispatch({
         type: UPDATE_PROFILE,
         payload: res.data,
       });
-      dispatch(setAlert('Appointment Removed ', 'danger'));
+      dispatch(setAlert('Appointment added successfully ', 'success'));
     } catch (err) {
-      dispatch({
-        type: PROFILE_ERROR,
-        payload: { msg: err.response.statusText, status: err.response.status },
-      });
+      const error = err.response.data.msg;
+     if (error) {
+     dispatch(setAlert(error), 'danger');
+     }
+     history.push('/dashboard'); //redirect to /dashboard
+      
     }
   };
 
-export const addScheduler = formData => async dispatch => {
-  try {
-    dispatch({
-      type: ADD_SCHEDULER,
-      payload: formData,
-    });
-  } catch (err) {
-    dispatch({
-      type: PROFILE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
-    });
-  }
-};

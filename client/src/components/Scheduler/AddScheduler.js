@@ -7,6 +7,11 @@ import StepContent from '@material-ui/core/StepContent';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import { withRouter } from 'react-router-dom';
+//redux
+import { connect } from 'react-redux';
+import { addAppointments } from '../../actions/profile';
+import PropTypes from 'prop-types';
 
 import 'date-fns';
 import GetStepContent from './GetStepContent';
@@ -30,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   MuiStepIcoActive: {
     color: '#F5D0C5',
   },
-  MuiStepIconrRoot: {
+  MuiStepIconRoot: {
     color: '#F5D0C5',
   },
   formControl: {
@@ -46,7 +51,7 @@ function getSteps() {
   return ['Choose Working hours'];
 }
 
-export default function AddScheduler() {
+const AddScheduler = ({ addAppointments, history }) => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const [days, setDays] = useState(() => [
@@ -77,22 +82,27 @@ export default function AddScheduler() {
   };
 
   const steps = getSteps();
-  const schedule = new Set();
+
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
-  const handleFinish = () => {
+  const handleFinish = event => {
+    event.preventDefault();
     createAppointmentsList();
-    let newAppointment;
-    let initialValue = appointmentList[0];
-    
-      days.forEach(day => {
-        for(let i=0;i<appointmentList.length-1;i++){
-          addAppointment({startTime:appointmentList[i],endTime:appointmentList[i+1],day:day})
-        }
-      });
-      console.log(appointments);
-  }
+
+    days.forEach(day => {
+      for (let i = 0; i < appointmentList.length-1 ; i++) {
+        appointments.push({
+          startTime: appointmentList[i],
+          endTime: appointmentList[i + 1],
+          day: day,
+        });
+      }
+    });
+    setAppointments(appointments);
+    console.log()
+    addAppointments(appointments, history);
+  };
   const handleBack = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
@@ -100,9 +110,12 @@ export default function AddScheduler() {
   const handleReset = () => {
     setActiveStep(0);
   };
-  const addAppointment = appointment =>
+  const addAppointment = appointment => {
     setAppointments(state => [...state, appointment]);
+  };
+  
   const createAppointmentsList = () => {
+    setAppointments([]);
     let start = new Date(startTime);
     let end = new Date(EndTime);
     let startingTime = start.getHours() + start.getMinutes() / 60;
@@ -114,18 +127,16 @@ export default function AddScheduler() {
     let hoursString;
     let minutesString;
 
-    for (let i = 0; i < appointmentNum; i++) {
+    for (let i = 0; i < appointmentNum+1; i++) {
       if (minutes >= 60) {
         hours += 1;
         minutes = minutes % 60;
         hoursString = hours < 10 ? `0${hours}` : hours;
         minutesString = minutes === 0 ? '00' : minutes;
-        // console.log(`${hoursString}:${minutesString}`)
         appointmentList.push(`${hoursString}:${minutesString}`);
       } else {
         hoursString = hours < 10 ? `0${hours}` : hours;
         minutesString = minutes === 0 ? '00' : minutes;
-        // console.log(`${hoursString}:${minutesString}`)
         appointmentList.push(`${hoursString}:${minutesString}`);
       }
       startingTime = startingTime + duration / 60;
@@ -212,4 +223,8 @@ export default function AddScheduler() {
       )}
     </div>
   );
-}
+};
+AddScheduler.propTypes = {
+  addAppointments: PropTypes.func.isRequired,
+};
+export default connect(null, { addAppointments })(withRouter(AddScheduler));

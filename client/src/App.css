@@ -290,7 +290,7 @@ button {
 
 .table th,
 .table td {
-  padding: 1rem;
+  padding: 0.7rem;
   text-align: left;
 }
 
@@ -425,7 +425,10 @@ button {
 .profile-edu > div {
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: #ccc 1px dotted;
+  display: flex;
+  
+  align-items: flex-start;
+
 }
 
 .profile-exp > div:last-child,
@@ -438,23 +441,6 @@ button {
   margin: 0.5rem 0;
 }
 
-.profile-github {
-  grid-area: github;
-}
-
-.profile-github .repo {
-  display: flex;
-}
-
-.profile-github .repo > div:first-child {
-  flex: 7;
-  flex-basis: 70%;
-}
-
-.profile-github > div:last-child {
-  flex: 3;
-  flex-basis: 20%;
-}
 
 /* Posts Page */
 .post-form .post-form-header {

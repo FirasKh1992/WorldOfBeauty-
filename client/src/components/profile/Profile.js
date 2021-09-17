@@ -12,6 +12,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Button from '@material-ui/core/Button';
 const Profile = ({ getProfileById, profile: { profile }, auth, match,updateAppointment,history }) => {
   const [day,setDay]=useState();
   const [appointments,setAppointments]=useState([]);
@@ -31,7 +32,9 @@ const Profile = ({ getProfileById, profile: { profile }, auth, match,updateAppoi
   const appointmentsSelected = (event,appointmentId)=>{
     event.preventDefault();
     setSelectedAppoinment(appointmentId.props.value)
-    updateAppointment(match.params.id,appointmentId.props.value,history)
+  }
+  const handleSubmit = () =>{
+    updateAppointment(match.params.id,selectedAppointment,history);
   }
   return (
     <Fragment>
@@ -73,7 +76,7 @@ const Profile = ({ getProfileById, profile: { profile }, auth, match,updateAppoi
                     <Select
                        className='day-select'
                       labelId='demo-simple-select-label'
-                      value={day}
+                      value={day?day:""}
                       onChange={(event,day)=> {
                         event.preventDefault();
                         setDay(day);
@@ -96,7 +99,7 @@ const Profile = ({ getProfileById, profile: { profile }, auth, match,updateAppoi
                     className='day-select'
                       labelId='demo-simple-select-label'
                       id='demo-simple-select'
-                      value={selectedAppointment}
+                      value={selectedAppointment?selectedAppointment:""}
                       onChange={appointmentsSelected}
                   
                     >
@@ -104,7 +107,13 @@ const Profile = ({ getProfileById, profile: { profile }, auth, match,updateAppoi
                       <MenuItem value={appointment._id}>{`${appointment.startTime} - ${appointment.endTime}`}</MenuItem>
                     ))}
                     </Select>
-
+                    <Button
+                      variant='contained'
+                      style={{ backgroundColor: '#3C0000', color: '#F5D0C5' }}
+                      onClick={handleSubmit}
+                    >
+                      Book Appointment
+                    </Button>
                   </FormControl>
                 </Fragment>
               ) : (
@@ -131,4 +140,4 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps, { getProfileById,updateAppointment })(Profile);
+export default connect(mapStateToProps, { getProfileById,updateAppointment })(withRouter(Profile));

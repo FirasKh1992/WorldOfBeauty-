@@ -7,6 +7,7 @@ import Spinner from '../layouts/Spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { DashboardActions } from './DashboardActions';
+import BookedAppointment from '../Scheduler/BookedAppointment'
 import { deleteAccount } from '../../actions/profile';
 
 const Dashboard = ({
@@ -29,6 +30,7 @@ const Dashboard = ({
       {profile !== null ? (
         <Fragment>
           <DashboardActions />
+          <BookedAppointment bookedAppointments={profile.bookedAppointments}/>
           <div className='my-2'>
             <button onClick={() => deleteAccount()} className='btn btn-danger'>
               <FontAwesomeIcon icon={faUser} /> Delete My Account

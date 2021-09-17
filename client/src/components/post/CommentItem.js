@@ -12,16 +12,12 @@ const CommentItem = ({
     auth,
     deleteComment
 }) => {
-
-    console.log(`_id=${_id}`);
-    console.log(`postId=${postId}`);
-    console.dir(auth);
     return (
-        <div class="post bg-white p-1 my-1">
+        <div className="post bg-white p-1 my-1">
           <div>
             <Link to={`/profile/${user}`}>
               <img
-                class="round-img"
+              className="round-img"
                 src={avatar}
                 alt=""
               />
@@ -29,10 +25,10 @@ const CommentItem = ({
             </Link>
           </div>
           <div>
-            <p class="my-1">
+            <p className="my-1">
               {text}
             </p>
-             <p class="post-date">
+             <p className="post-date">
                 Posted on <Moment format='YYYY/MM/DD'>{date}</Moment>
             </p>
             {!auth.loading && user===auth._id && (

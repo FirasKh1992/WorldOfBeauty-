@@ -27,7 +27,7 @@ export default function GetStepContent({
       return (
         <div>
           <ToggleButtonGroup
-            value={days}
+            value={days?days:""}
             onChange={handleDays}
             aria-label='text formatting'
           >
@@ -84,7 +84,7 @@ export default function GetStepContent({
             <Select
               labelId='demo-simple-select-label'
               id='demo-simple-select'
-              value={duration}
+              value={duration?duration:'15'}
               onChange={handleDurationChange}
             >
               <MenuItem value={15}>15</MenuItem>

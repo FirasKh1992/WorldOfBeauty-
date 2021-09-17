@@ -11,6 +11,7 @@ import {
   faYoutube,
   faInstagram,
 } from '@fortawesome/free-brands-svg-icons';
+import axios from 'axios';
 const CreateProfile = ({ createProfile, history }) => {
   const [formData, setFormData] = useState({
     business: '',
@@ -23,6 +24,7 @@ const CreateProfile = ({ createProfile, history }) => {
     facebook: '',
     instagram: '',
     youtube: '',
+    base64EncodedImage:''
   });
 
   const [displaySocialInputs, toggleSocialInputs] = useState(false);
@@ -37,14 +39,29 @@ const CreateProfile = ({ createProfile, history }) => {
     facebook,
     instagram,
     youtube,
+    base64EncodedImage,
   } = formData;
-
+  
   const onChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
+   
+ 
+
+ 
+  const handleImageChange = (e) =>{
+    const file = e.target.files[0];
+    previewFile(file);
+  }
 
   const onSubmit = e => {
     e.preventDefault();
-    createProfile(formData, history);
+      createProfile(formData, history);
+  };
+  const previewFile = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => setFormData( {...formData, 'base64EncodedImage': reader.result})
+    console.log(base64EncodedImage)
   };
   return (
     <Fragment>
@@ -115,6 +132,13 @@ const CreateProfile = ({ createProfile, history }) => {
             Peel,Laser Hair Removal,Botox Injections)
           </small>
         </div>
+        <input
+          type='file'
+          name='image'
+          onChange={event => {
+            handleImageChange(event);
+          }}
+        />
         <div className='form-group'>
           <textarea
             placeholder='A short bio of yourself'
@@ -205,7 +229,7 @@ const CreateProfile = ({ createProfile, history }) => {
         )}
 
         <input type='submit' className='btn btn-primary my-1' />
-        <Link class='btn btn-light my-1' to='/dashboard'>
+        <Link className='btn btn-light my-1' to='/dashboard'>
           Go Back
         </Link>
       </form>

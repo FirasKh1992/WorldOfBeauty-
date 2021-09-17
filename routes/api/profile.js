@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../../middleware/auth');
 
+const {cloudinary} = require('../../utils/cloudinary')
+
+const auth = require('../../middleware/auth');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 const Post = require('../../models/Post');
@@ -12,11 +14,12 @@ const { validationResult, check } = require('express-validator');
 //@aceess Private
 router.get('/me', auth, async (req, res) => {
   try {
+    
     const profile = await Profile.findOne({ user: req.user.id }).populate(
       'user',
       ['name', 'avatar']
     );
-
+    console.log('api is working')
     if (!profile) {
       return res.status(400).send('there is no profile for this user');
     }
@@ -80,8 +83,10 @@ router.post(
       facebook,
       twitter,
       instagram,
+      base64EncodedImage,
     } = req.body;
-
+    
+ 
     const profileFeilds = {};
     profileFeilds.user = req.user.id;
     if (business) profileFeilds.business = business;
@@ -101,7 +106,17 @@ router.post(
     if (instagram) profileFeilds.social.instagram = instagram;
 
     try {
+      if(base64EncodedImage){
+      
+      const uploadedResponce = await cloudinary.uploader.upload(base64EncodedImage,{upload_preset:'world_of_beauty'});
+     
+      const user = await User.findById(req.user.id).select("-password");
+      console.log(uploadedResponce.url)
+      user.avatar=uploadedResponce.url;
+      await user.save();
+    }
       let profile = await Profile.findOne({ user: req.user.id });
+      
 
       if (profile) {
         //update
@@ -114,6 +129,9 @@ router.post(
       }
       //create
       profile = new Profile(profileFeilds);
+      
+
+
       await profile.save();
       res.json(profile);
     } catch (err) {
@@ -145,12 +163,32 @@ router.delete('/', auth, async (req, res) => {
     await Post.deleteMany({ user: req.user.id });
     //remove profile
     await Profile.findOneAndDelete({ user: req.user.id });
-    //remove user
-    await User.findOneAndDelete({ _id: req.user.id });
+    // //remove user
+    // await User.findOneAndDelete({ _id: req.user.id });
     res.json('user removed');
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
+  }
+});
+
+
+router.delete('/appointment/:appointment_id/:client_id', auth, async (req, res) => {
+
+  try {
+   
+    const profile = await Profile.findOne({ user: req.params.client_id });
+    const removeIndex = profile.bookedAppointments
+      .map(item => item.appointmentId)
+      .indexOf(req.params.appointment_id);
+   
+    profile.bookedAppointments.splice(removeIndex, 1);
+
+    await profile.save();
+    res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(`Server error ${err.message}`);
   }
 });
 
@@ -179,13 +217,12 @@ router.put(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    console.dir(req.body);
     const appointments = [...req.body];
     try {
-      const profile = await Profile.findOne({ user: req.user.id });
-      console.log(profile);
+      const profile = await Profile.findOne({ user: req.user.id })
       profile.appointments = [...appointments];
       await profile.save();
+
       res.json(profile);
     } catch (err) {
       console.error(err.message);
@@ -194,19 +231,32 @@ router.put(
   }
 );
 
-//@route DELETE api/profile/appointment/:appointment_id
-//@desc delete appointment
+
+
+//@route POST api/profile/appointments/:appointment_id
+//@desc remove  booked appointment
 //@access  private
 router.delete('/appointments/:appointment_id', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id });
-    const removeIndex = profile.appointments
+    const removeIndex = profile.bookedAppointments
       .map(item => item.id)
       .indexOf(req.params.appointment_id);
-    profile.appointments.splice(removeIndex, 1);
+    const BookedAppointmentId =
+      profile.bookedAppointments[removeIndex].appointmentId;
+    const therapistId = profile.bookedAppointments[removeIndex].therapistId;
+    profile.bookedAppointments.splice(removeIndex, 1);
 
+    const therapistProfile = await Profile.findOne({ user: therapistId });
+    therapistProfile.appointments.map(appointment => {
+      if (appointment._id.toString() === BookedAppointmentId.toString()) {
+        appointment.status = 'false';
+        appointment.client = null;
+      }
+    });
+
+    await therapistProfile.save();
     await profile.save();
-
     res.json(profile);
   } catch (err) {
     console.error(err.message);
@@ -214,18 +264,21 @@ router.delete('/appointments/:appointment_id', auth, async (req, res) => {
   }
 });
 
+
+//@route delete api/profile/appointments/:client_id
+//@desc remove   booked appointments by the therapist.
+//@access  private
+
+
+
+
 //@route Post api/profile/appointment
 //@desc update  appointment
 //@access  private
 router.put(
   '/appointments/:therapist_id/:appointment_id',
 
-  [
-    auth,
-    [
-      check('status', 'status is required').not().isEmpty(),
-    ],
-  ],
+  [auth, [check('status', 'status is required').not().isEmpty()]],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -233,29 +286,23 @@ router.put(
     }
     const { status } = req.body;
     try {
-      let profile = await Profile.findOne({ user: req.params.therapist_id }).populate(
-        'user',
-        ['name', 'avatar']
-      );
-
+      let profile = await Profile.findOne({
+        user: req.params.therapist_id,
+      }).populate('user', ['name', 'avatar']);
       const currentAppointment = profile.appointments
         .filter(
           appointment =>
             appointment._id.toString() === req.params.appointment_id.toString()
         )
         .find(app => app);
-        console.log(currentAppointment);
-
       //in case the client want to book new appointment;
       if (status.toString() === 'true') {
-        console.log('status is true')
         // check if the appointment is already taken.
         if (
           currentAppointment.status &&
           currentAppointment.client &&
           currentAppointment.client.toString() !== req.user.id
         ) {
-          console.log('the appointment is already taken')
           return res.status(400).json({
             msg: `the appointment is already taken`,
           });
@@ -267,7 +314,6 @@ router.put(
           currentAppointment.client &&
           currentAppointment.client.toString() === req.user.id
         ) {
-          console.log('you have already book this appointment')
           return res.status(400).json({
             msg: `you have already book this appointment`,
           });
@@ -282,7 +328,6 @@ router.put(
               appointment.client.toString() === req.user.id
           ).length > 0
         ) {
-          console.log('you already have an appointment for this type of treatment')
           return res.status(400).json({
             msg: `you already have an appointment for this type of treatment`,
           });
@@ -305,7 +350,6 @@ router.put(
           currentAppointment.client &&
           currentAppointment.client.toString() !== req.user.id
         ) {
-          console.log('You did not book this appointment')
           return res.status(400).json({
             msg: `You did not book this appointment`,
           });
@@ -317,8 +361,30 @@ router.put(
           appointment = Object.assign(appointment, currentAppointment);
         }
       });
+     
+      const bookedAppointment = {
+        appointmentId: currentAppointment._id,
+        location: currentAppointment.location,
+        from: currentAppointment.startTime,
+        to: currentAppointment.endTime,
+        day: currentAppointment.day,
+        saloonName: profile.business,
+        therapist: profile.user.name,
+        therapistId: req.params.therapist_id,
+      };
+
+      let ClientProfile = await Profile.findOne({
+        user: req.user.id,
+      }).populate('user', ['name', 'avatar']);
+
       await profile.save();
-      res.json(profile);
+      
+      ClientProfile.bookedAppointments.push(bookedAppointment);
+      await ClientProfile.save();
+
+    
+  
+      res.json(ClientProfile);
     } catch (err) {
       console.error(err.message);
       res.status(500).send(`Server Error ${err.message}`);

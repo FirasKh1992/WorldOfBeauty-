@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Fragment } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { connect } from 'react-redux'; 
 const ProfileAbout = ({
   profile: {
     bio,
@@ -37,4 +38,4 @@ ProfileAbout.propTypes = {
   profile: PropTypes.func.isRequired,
 };
 
-export default ProfileAbout;
+export default connect(null)(ProfileAbout);;

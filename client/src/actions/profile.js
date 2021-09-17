@@ -8,7 +8,6 @@ import {
   CLEAR_PROFILE,
   GET_PROFILES,
   UPDATE_PROFILE,
-
 } from './types';
 //GET CURRENT USERS PROFILE
 export const getCurrentUserProfile = () => async dispatch => {
@@ -153,7 +152,7 @@ export const addAppointments = (formData, history) => async dispatch => {
 
 //Delete appointment
 export const deleteAppointment = id => async dispatch => {
-  const res = await axios.delete(`/api/profile/appointment/${id}`);
+  const res = await axios.delete(`/api/profile/appointments/${id}`);
   try {
     dispatch({
       type: UPDATE_PROFILE,
@@ -170,14 +169,14 @@ export const deleteAppointment = id => async dispatch => {
 
 //update appointment
 export const updateAppointment =
-  (therapist_id, appointment_id,history) => async dispatch => {  
+  (therapist_id, appointment_id, history) => async dispatch => {
     try {
       const config = {
         headers: {
           'Content-Type': 'application/json',
         },
       };
-      const status = "true";
+      const status = 'true';
       const body = JSON.stringify({ status });
       const res = await axios.put(
         `/api/profile/appointments/${therapist_id}/${appointment_id}`,
@@ -189,13 +188,33 @@ export const updateAppointment =
         payload: res.data,
       });
       dispatch(setAlert('Appointment added successfully ', 'success'));
+      history.push('/dashboard'); //redirect to /dashboard
     } catch (err) {
       const error = err.response.data.msg;
-     if (error) {
-     dispatch(setAlert(error), 'danger');
-     }
-     history.push('/dashboard'); //redirect to /dashboard
-      
+      if (error) {
+        dispatch(setAlert(error), 'danger');
+      }
+      history.push('/dashboard'); //redirect to /dashboard
     }
   };
 
+export const removeBookedAppointmentByTherapist =
+  (appointmentId, clientId) => async dispatch => {
+    console.log('removing the old booked appointment');
+    const res = await axios.delete(
+      `/api/profile/appointment/${appointmentId}/${clientId}`
+    );
+    console.log(`res=${res}`)
+    try {
+      dispatch({
+        type: UPDATE_PROFILE,
+        payload: res.data,
+      });
+      //dispatch(setAlert('Appointment Removed ', 'danger'));
+    } catch (err) {
+      dispatch({
+        type: PROFILE_ERROR,
+        payload: { msg: err.response.statusText, status: err.response.status },
+      });
+    }
+  };

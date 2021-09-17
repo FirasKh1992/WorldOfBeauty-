@@ -8,9 +8,13 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { withRouter } from 'react-router-dom';
+import { alpha } from '@material-ui/core/styles';
 //redux
 import { connect } from 'react-redux';
-import { addAppointments } from '../../actions/profile';
+import {
+  addAppointments,
+  removeBookedAppointmentByTherapist,
+} from '../../actions/profile';
 import PropTypes from 'prop-types';
 
 import 'date-fns';
@@ -51,7 +55,12 @@ function getSteps() {
   return ['Choose Working hours'];
 }
 
-const AddScheduler = ({ addAppointments, history }) => {
+const AddScheduler = ({
+  addAppointments,
+  removeBookedAppointmentByTherapist,
+  profile: { profile },
+  history,
+}) => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const [days, setDays] = useState(() => [
@@ -59,7 +68,7 @@ const AddScheduler = ({ addAppointments, history }) => {
     'Monday',
     'Tuesday',
     'Wednesday',
-    'Tuesday',
+    'Thursday',
   ]);
   const [duration, setDuration] = useState(15);
   const [startTime, setStartTime] = useState(new Date('2014-08-18T08:00:00'));
@@ -91,7 +100,7 @@ const AddScheduler = ({ addAppointments, history }) => {
     createAppointmentsList();
 
     days.forEach(day => {
-      for (let i = 0; i < appointmentList.length-1 ; i++) {
+      for (let i = 0; i < appointmentList.length - 1; i++) {
         appointments.push({
           startTime: appointmentList[i],
           endTime: appointmentList[i + 1],
@@ -99,8 +108,19 @@ const AddScheduler = ({ addAppointments, history }) => {
         });
       }
     });
+    if (profile!==null) {
+      const oldAppointments = profile.appointments.filter(
+        appointment => appointment.status === true
+      );
+      for (let index = 0; index < oldAppointments.length; index++) {
+        removeBookedAppointmentByTherapist(
+          oldAppointments[index].appointmentId,
+          oldAppointments[index].client
+        );
+      }
+    }
+  
     setAppointments(appointments);
-    console.log()
     addAppointments(appointments, history);
   };
   const handleBack = () => {
@@ -110,10 +130,8 @@ const AddScheduler = ({ addAppointments, history }) => {
   const handleReset = () => {
     setActiveStep(0);
   };
-  const addAppointment = appointment => {
-    setAppointments(state => [...state, appointment]);
-  };
-  
+
+
   const createAppointmentsList = () => {
     setAppointments([]);
     let start = new Date(startTime);
@@ -127,7 +145,7 @@ const AddScheduler = ({ addAppointments, history }) => {
     let hoursString;
     let minutesString;
 
-    for (let i = 0; i < appointmentNum+1; i++) {
+    for (let i = 0; i < appointmentNum + 1; i++) {
       if (minutes >= 60) {
         hours += 1;
         minutes = minutes % 60;
@@ -142,7 +160,6 @@ const AddScheduler = ({ addAppointments, history }) => {
       startingTime = startingTime + duration / 60;
       minutes = minutes + duration;
     }
-    console.log(`the appointments array ${appointmentList}`);
   };
 
   return (
@@ -156,7 +173,7 @@ const AddScheduler = ({ addAppointments, history }) => {
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
             <StepContent>
-              <Typography>
+          
                 <GetStepContent
                   step={index}
                   handleDurationChange={handleDurationChange}
@@ -168,7 +185,7 @@ const AddScheduler = ({ addAppointments, history }) => {
                   EndTime={EndTime}
                   days={days}
                 />
-              </Typography>
+       
               <div className={classes.actionsContainer}>
                 <div>
                   <Button
@@ -226,5 +243,13 @@ const AddScheduler = ({ addAppointments, history }) => {
 };
 AddScheduler.propTypes = {
   addAppointments: PropTypes.func.isRequired,
+  removeBookedAppointmentByTherapist: PropTypes.func.isRequired,
+  profile: PropTypes.object.isRequired,
 };
-export default connect(null, { addAppointments })(withRouter(AddScheduler));
+const mapStateToProps = state => ({
+  profile: state.profile,
+});
+export default connect(mapStateToProps, {
+  addAppointments,
+  removeBookedAppointmentByTherapist,
+})(withRouter(AddScheduler));

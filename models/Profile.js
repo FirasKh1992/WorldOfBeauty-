@@ -66,6 +66,41 @@ const ProfileSchema = new mongoose.Schema({
       },
     },
   ],
+  bookedAppointments: [
+    {
+      appointmentId:{
+        type:String,
+        required:true
+      },
+      location: {
+        type: String,
+      },
+      saloonName: {
+        type: String,
+        required: true,
+      },
+      therapist: {
+        type: String,
+      },
+      therapistId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: User,
+      },
+      from: {
+        type: String,
+        required: true,
+      },
+      to: {
+        type: String,
+        required:true
+
+      },
+      day:{
+        type:String,
+        required:true
+      }
+    },
+  ],
   date: {
     type: Date,
     default: Date.now,

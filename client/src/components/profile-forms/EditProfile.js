@@ -57,10 +57,10 @@ const EditProfile = ({
         status: loading || !profile.status ? '' : profile.status,
         bio: loading || !profile.bio ? '' : profile.bio,
 
-        twitter: loading || !profile.social ? '' : profile.twitter,
-        facebook: loading || !profile.social ? '' : profile.facebook,
-        instagram: loading || !profile.social ? '' : profile.instagram,
-        youtube: loading || !profile.social ? '' : profile.youtube,
+        twitter: loading || !profile.social ? '' : profile.social.twitter,
+        facebook: loading || !profile.social ? '' : profile.social.facebook,
+        instagram: loading || !profile.social ? '' : profile.social.instagram,
+        youtube: loading || !profile.social ? '' : profile.social.youtube,
       });
     }
   }, [loading, getCurrentUserProfile]); // eslint-disable-line react-hooks/exhaustive-deps
